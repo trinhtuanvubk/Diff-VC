@@ -8,6 +8,9 @@ Official implementation of the paper "Diffusion-Based Voice Conversion with Fast
 
 Please check *inference.ipynb* for the detailed instructions.
 
+The pre-trained speaker encoder we use is available at https://drive.google.com/file/d/1Y8IO2_OqeT85P1kks9I9eeAq--S65YFb/view?usp=sharing
+Please put it to *checkpts/spk_encoder/*
+
 The pre-trained universal HiFi-GAN vocoder we use is available at https://drive.google.com/file/d/10khlrM645pTbQ4rc2aNEYPba8RFDBkW-/view?usp=sharing. It is taken from the official HiFi-GAN repository. Please put it to *checkpts/vocoder/*
 
 You have to download voice conversion model trained on LibriTTS from here: https://drive.google.com/file/d/18Xbme0CTVo58p2vOHoTQm8PBGW7oEjAy/view?usp=sharing
