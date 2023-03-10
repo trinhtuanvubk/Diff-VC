@@ -1,0 +1,4 @@
+requirement_env.txt
+checkpts/spk_encoder/pretrained.pt
+checkpts/vc/vc_libritts_wodyn.pt
+checkpts/vocoder/generator
