@@ -16,6 +16,12 @@ Additionally, we provide voice conversion model trained on VCTK: https://drive.g
 
 Please put voice conversion models to *checkpts/vc/*
 
+# Build docker environment 
+
+- To build image, run `Docker build -t diffvc .` (diffvc is the image name)
+- To run a container for develop, run `bash run-container.sh`
+
+
 # Training your own model
 
 0. To train model on your data, first create a data directory with three folders: "wavs", "mels" and "embeds". Put raw audio files sampled at 22.05kHz to "wavs" directory. The functions for calculating mel-spectrograms and extracting 256-dimensional speaker embeddings with the pre-trained speaker verification network located at *checkpts/spk_encoder/* can be found at *inference.ipynb* notebook (*get_mel* and *get_embed* correspondingly). Please put these data to "mels" and "embeds" folders respectively. Note that all the folders in your data directory should have subfolders corresponding to particular speakers and containing data only for corresponding speakers.
@@ -27,3 +33,9 @@ Please put voice conversion models to *checkpts/vc/*
 3. Once you have the encoder *enc.pt* in "logs_enc" directory, create "logs_dec" directory and run *train_dec.py* to train the diffusion-based decoder.
 
 4. Please check *params.py* for the most important hyperparameters.
+
+
+# Build container to run demo app 
+
+- To build image, run `Docker build -t diffvc .` (diffvc is the image name)
+- To run a container for develop, run `bash run-container.sh`

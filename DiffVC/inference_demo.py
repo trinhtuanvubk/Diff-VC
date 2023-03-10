@@ -2,9 +2,7 @@ import argparse
 import json
 import os
 import numpy as np
-import IPython.display as ipd
 from tqdm import tqdm
-from scipy.io.wavfile import write
 import soundfile as sf
 import torch
 use_gpu = torch.cuda.is_available()
@@ -26,12 +24,10 @@ sys.path.append('speaker_encoder/')
 from encoder import inference as spk_encoder
 from pathlib import Path
 
-# first block 
+
 class Inferencer(): 
     def __init__(self, generator, spk_encoder, hifigan_universal, output_path="./output_demo", use_gpu=False):
 
-        # self.source_path = source_path
-        # self.target_path = target_path 
         self.generator = generator
         self.spk_encoder = spk_encoder
         self.hifigan_universal = hifigan_universal
@@ -112,8 +108,6 @@ class Inferencer():
             embed_target = embed_target.cuda()
             
             
-        #  blocks 
-
         # performing voice conversion
         mel_encoded, mel_ = self.generator.forward(mel_source, mel_source_lengths, mel_target, mel_target_lengths, embed_target, 
                                             n_timesteps=30, mode='ml')
@@ -130,101 +124,3 @@ class Inferencer():
            
         return output_wav
 
-'''
-        
-# blocks 
-
-# loading voice conversion model
-vc_path = 'checkpts/vc/vc_libritts_wodyn.pt' # path to voice conversion model
-
-generator = DiffVC(params.n_mels, params.channels, params.filters, params.heads, 
-                   params.layers, params.kernel, params.dropout, params.window_size, 
-                   params.enc_dim, params.spk_dim, params.use_ref_t, params.dec_dim, 
-                   params.beta_min, params.beta_max)
-if use_gpu:
-    generator = generator.cuda()
-    generator.load_state_dict(torch.load(vc_path))
-else:
-    generator.load_state_dict(torch.load(vc_path, map_location='cpu'))
-generator.eval()
-
-print(f'Number of parameters: {generator.nparams}')
-
-# blocks 
-
-# loading HiFi-GAN vocoder
-hfg_path = 'checkpts/vocoder/' # HiFi-GAN path
-
-with open(hfg_path + 'config.json') as f:
-    h = AttrDict(json.load(f))
-
-if use_gpu:
-    hifigan_universal = HiFiGAN(h).cuda()
-    hifigan_universal.load_state_dict(torch.load(hfg_path + 'generator')['generator'])
-else:
-    hifigan_universal = HiFiGAN(h)
-    hifigan_universal.load_state_dict(torch.load(hfg_path + 'generator',  map_location='cpu')['generator'])
-
-_ = hifigan_universal.eval()
-hifigan_universal.remove_weight_norm()
-
-# blocks 
-
-# loading speaker encoder
-enc_model_fpath = Path('checkpts/spk_encoder/pretrained.pt') # speaker encoder path
-if use_gpu:
-    spk_encoder.load_model(enc_model_fpath, device="cuda")
-else:
-    spk_encoder.load_model(enc_model_fpath, device="cpu")
-    
-
-# blocks
-
-# loading source and reference wavs, calculating mel-spectrograms and speaker embeddings
-src_path = 'example/6415_111615_000012_000005.wav' # path to source utterance
-tgt_path = 'example/8534_216567_000015_000010.wav' # path to reference utterance
-
-
-
-mel_source = torch.from_numpy(get_mel(src_path)).float().unsqueeze(0)
-if use_gpu:
-    mel_source = mel_source.cuda()
-mel_source_lengths = torch.LongTensor([mel_source.shape[-1]])
-if use_gpu:
-    mel_source_lengths = mel_source_lengths.cuda()
-
-mel_target = torch.from_numpy(get_mel(tgt_path)).float().unsqueeze(0)
-if use_gpu:
-    mel_target = mel_target.cuda()
-mel_target_lengths = torch.LongTensor([mel_target.shape[-1]])
-if use_gpu:
-    mel_target_lengths = mel_target_lengths.cuda()
-
-embed_target = torch.from_numpy(get_embed(tgt_path)).float().unsqueeze(0)
-if use_gpu:
-    embed_target = embed_target.cuda()
-    
-    
-#  blocks 
-
-# performing voice conversion
-mel_encoded, mel_ = generator.forward(mel_source, mel_source_lengths, mel_target, mel_target_lengths, embed_target, 
-                                      n_timesteps=30, mode='ml')
-mel_synth_np = mel_.cpu().detach().squeeze().numpy()
-mel_source_np = mel_.cpu().detach().squeeze().numpy()
-mel = torch.from_numpy(mel_spectral_subtraction(mel_synth_np, mel_source_np, smoothing_window=1)).float().unsqueeze(0)
-if use_gpu:
-    mel = mel.cuda() 
-
-
-    
-# converted 
-
-with torch.no_grad():
-    audio = hifigan_universal.forward(mel).cpu().squeeze().clamp(-1, 1)
-    ipd.display(ipd.Audio(audio, rate=22050))
-    print(audio.shape)
-    
-    
-    
-    '''

@@ -3,7 +3,7 @@ import os
 import uuid
 import torch
 import json
-from test_infer import Inferencer
+from inference_demo import Inferencer
 
 import params
 from model import DiffVC
@@ -33,9 +33,6 @@ else:
     generator.load_state_dict(torch.load(vc_path, map_location='cpu'))
 generator.eval()
 
-# print(f'Number of parameters: {generator.nparams}')
-
-# blocks 
 
 # loading HiFi-GAN vocoder
 hfg_path = 'checkpts/vocoder/' # HiFi-GAN path
@@ -61,37 +58,28 @@ if use_gpu:
 else:
     spk_encoder.load_model(enc_model_fpath, device="cpu")
     
-
-# build inferencer
-# output_path="output_demo"
+    
+#  define inference object
 _inferencer = Inferencer(generator, spk_encoder, hifigan_universal, "./output_demo", True)
-# print(_inferencer)
-
-# cpu_param = "--cpu" if not torch.cuda.is_available() else ""
-
 
 
 def _inference(audio_path, target_path, mic_path1=None, mic_path2=None):
-    # _inferencer = Inferencer(config=config, args=args)
+
     if mic_path1:
         audio_path = mic_path1
     if mic_path2:
         target_path = mic_path2
-    # output_path = f"./output/output_{uuid.uuid4()}.wav"
-    # output_path = "./test_wav/p226_001.wav"
-    # os.system(
-    #     f"python demo_cli.py --no_sound {cpu_param} --audio_path {audio_path} --text {shlex.quote(text.strip())} --output_path {output_path}")
+   
     output_path = _inferencer.inference_demo(src_path=audio_path, tgt_path=target_path)
-    # print("hihi")
+
     return output_path
 
+# gradio app 
 
 title = "AGAIN-VC-DEMO"
 description = "Gradio demo for Voice Conversion"
-# article = "<p style='text-align: center'><a href='https://matheo.uliege.be/handle/2268.2/6801' target='_blank'>Voice Cloning Demo</a> | <a href='https://github.com/CorentinJ/Real-Time-Voice-Cloning' target='_blank'>Github Repo</a></p>"
+# examples = [['./test_wav/p225_001.wav', "./test_wav/p226_001.wav"]]
 
-examples = [['./test_wav/p225_001.wav', "./test_wav/p226_001.wav"]]
-# server_port = 1400
 
 def toggle(choice):
     if choice == "mic":
@@ -102,23 +90,6 @@ def toggle(choice):
 
 with gr.Blocks() as demo:
     with gr.Row():
-    #     with gr.Column():
-    #         radio = gr.Radio(["mic", "file"], value="mic",
-    #                          label="How would you like to upload your audio?")
-    #         mic_input = gr.Mic(label="Input", type="filepath", visible=False)
-    #         audio_input = gr.Audio(
-    #             type="filepath", label="Input", visible=True)
-    #         audio_target = gr.Audio(
-    #             type="filepath", label="Target", visible=True)
-    #     with gr.Column():
-    #         audio_output = gr.Audio(label="Output")
-
-    # # gr.Examples(examples, fn=_inference, inputs=[audio_input, audio_target],
-    # #                   outputs=audio_output, cache_examples=True)
-    # btn = gr.Button("Generate")
-    # btn.click(_inference, inputs=[audio_input,
-    #           audio_target, mic_input], outputs=audio_output)
-    # radio.change(toggle, radio, [mic_input, audio_input])
         with gr.Column():
             radio1 = gr.Radio(["mic", "file"], value="file",
                              label="How would you like to upload your audio?")
