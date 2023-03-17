@@ -1,2 +1,2 @@
 # Diff-VC
-Diffusion-based Voice Conversion
+Diffusion Model for Voice Conversion
