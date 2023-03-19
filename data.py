@@ -107,6 +107,9 @@ class VCEncDataset(torch.utils.data.Dataset):
 
 # VCTK dataset for training "average voice" encoder
 class VCTKEncDataset(torch.utils.data.Dataset):
+    '''
+    - The label of each mels file is the average mels 
+    '''
     def __init__(self, data_dir, exc_file, avg_type):
         self.mel_x_dir = os.path.join(data_dir, 'mels')
         self.mel_y_dir = os.path.join(data_dir, 'mels_%s' % avg_type)
@@ -164,12 +167,22 @@ class VCTKEncDataset(torch.utils.data.Dataset):
 
 
 class VCEncBatchCollate(object):
+    '''
+    - Get batch for training 
+    - If the length of the mels_x is longer than the train_frames param
+      we can choose a random start point and the mel_lenghts is the frame lenght
+    - If the lenght of the mels_x is shorter than the train_frames param 
+      the start point is 0 and the mel_lenghts is the lenght of x_mels
+    '''
     def __call__(self, batch):
         B = len(batch)
         mels_x = torch.zeros((B, n_mels, train_frames), dtype=torch.float32)
         mels_y = torch.zeros((B, n_mels, train_frames), dtype=torch.float32)
         max_starts = [max(item['x'].shape[-1] - train_frames, 0) 
                       for item in batch]
+
+        # if the length of the mels_x is longer than the train_frames param
+        # we can choose a random start point  
         starts = [random.choice(range(m)) if m > 0 else 0 for m in max_starts]
         mel_lengths = []
         for i, item in enumerate(batch):
