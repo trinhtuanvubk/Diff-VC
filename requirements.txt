@@ -1,3 +1,21 @@
+datetime == 4.4
+datasets == 1.17.0 
+protobuf == 3.19.4
+pydub == 0.25.1
+numpy == 1.21.5 
+onnx == 1.11.0 
+onnxruntime == 1.11.1 
+requests == 2.22.0 
+soundfile == 0.10.2 
+uvicorn == 0.17.5
+gunicorn == 20.1.0
+fastapi == 0.81.0
+python-multipart == 0.0.5
+tritonclient[all]
+python-dotenv
+loguru
+inflect
+webrtcvad-wheels
 einops==0.3.0
 librosa==0.8.0
 tb-nightly
