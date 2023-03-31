@@ -49,8 +49,9 @@ def embed_frames_batch(frames, use_torch=False):
     if not use_torch:
         frames = torch.from_numpy(frames)
     frames = frames.to(_device)
-
+    print(frames.shape)
     embeds = _model.forward(frames)
+    print(embeds.shape)
     if not use_torch:
         embeds = embeds.detach().cpu().numpy()
     return embeds
