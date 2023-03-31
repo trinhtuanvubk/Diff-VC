@@ -42,3 +42,11 @@ Please put voice conversion models to *checkpts/vc/*
 
 - To build image, run `Docker build -t diffvc .` (diffvc is the image name)
 - To run a container for develop, run `bash run-container.sh`
+
+
+# Serve model 
+1. Convert model from .pt to .onnx
+- `python3 -m export_onnx.export_hifigan` 
+- `python3 -m export_onnx.export_spk_enc`
+
+
