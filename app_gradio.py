@@ -3,7 +3,7 @@ import os
 import uuid
 import torch
 import json
-from inference_demo import Inferencer
+from inference import Inferencer
 
 import params
 from model import DiffVC
@@ -18,6 +18,10 @@ from encoder import inference as spk_encoder
 from pathlib import Path
 
 use_gpu = torch.cuda.is_available()
+
+MEDIA_ROOT = os.path.join('/logs', 'media')
+if not os.path.exists(MEDIA_ROOT):
+    os.makedirs(MEDIA_ROOT)
 
 #  load voice conversion 
 vc_path = 'checkpts/vc/vc_libritts_wodyn.pt' # path to voice conversion model
@@ -60,7 +64,7 @@ else:
     
     
 #  define inference object
-_inferencer = Inferencer(generator, spk_encoder, hifigan_universal, "./output_demo", True)
+_inferencer = Inferencer(generator, spk_encoder, hifigan_universal, MEDIA_ROOT, True)
 
 
 def _inference(audio_path, target_path, mic_path1=None, mic_path2=None):
@@ -70,13 +74,13 @@ def _inference(audio_path, target_path, mic_path1=None, mic_path2=None):
     if mic_path2:
         target_path = mic_path2
    
-    output_path = _inferencer.inference_demo(src_path=audio_path, tgt_path=target_path)
+    output_path = _inferencer.infer(src_path=audio_path, tgt_path=target_path, return_output_path=True)
 
     return output_path
 
 # gradio app 
 
-title = "AGAIN-VC-DEMO"
+title = "VC-DEMO"
 description = "Gradio demo for Voice Conversion"
 # examples = [['./test_wav/p225_001.wav', "./test_wav/p226_001.wav"]]
 
@@ -108,6 +112,7 @@ with gr.Blocks() as demo:
 
     # gr.Examples(examples, fn=_inference, inputs=[audio_input, audio_target],
     #                   outputs=audio_output, cache_examples=True)
+    
     btn = gr.Button("Generate")
     btn.click(_inference, inputs=[audio_input,
               audio_target, mic_input1, mic_input2], outputs=audio_output)
