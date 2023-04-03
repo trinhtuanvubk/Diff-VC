@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  voice-conversion-triton: 
+    image: nvcr.io/nvidia/tritonserver:21.10-py3
+    shm_size: '1gb' #<-- when RUNNING
+    container_name: triton_multi_ensemble
+    restart: unless-stopped
+    ports:
+      - "8030-8032:8000-8002"
+    environment:
+      - HOME=/config # fix "Home directory not accessible: Permission denied docker" when calling espeak
+    volumes:
+      - ./hifi-gan:/hifi-gan
+      - ./speaker_encoder:/speaker_encoder
+    command: bash -c "tritonserver --model-repository=/models --log-verbose 1"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+
+  hugo_multi_ensemble:
+    container_name: voice-conversion-api
+    restart: always
+    ports:
+      - 1513:1513
+    depends_on:
+      - "voice-conversion-triton"
+    command: bash -c "uvicorn filename:app --host 0.0.0.0  --port 1900 --workers 1"
+
+
