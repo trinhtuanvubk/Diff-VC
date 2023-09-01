@@ -1,11 +1,14 @@
 version: "3"
 
 services:
-  voice-conversion-triton: 
+  vc-triton: 
     image: nvcr.io/nvidia/tritonserver:21.10-py3
     shm_size: '1gb' #<-- when RUNNING
     container_name: triton_multi_ensemble
     restart: unless-stopped
+    networks:
+      - vcnetwork
+    hostname: vctriton
     ports:
       - "8030-8032:8000-8002"
     environment:
@@ -23,13 +26,21 @@ services:
               capabilities: [gpu]
 
 
-  hugo_multi_ensemble:
+  vc-api:
     container_name: voice-conversion-api
+    build: .
     restart: always
+    networks:
+      - vcnetwork
+    environment:
+      TRITON_URL: "vc-triton:8031"
     ports:
       - 1513:1513
     depends_on:
-      - "voice-conversion-triton"
+      - "vc-triton"
     command: bash -c "uvicorn filename:app --host 0.0.0.0  --port 1900 --workers 1"
 
 
+
+networks:
+  vcnetwork:
