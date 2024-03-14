@@ -1,0 +1,22 @@
+name: "vc_spk_encoder"
+platform: "onnxruntime_onnx"
+max_batch_size : 8
+version_policy: {
+    specific: {
+      versions: [1]
+    }
+}
+input [
+  {
+    name: "frame_input"
+    data_type: TYPE_FP16
+    dims: [-1, 160, 40]
+  }
+]
+output [
+  {
+    name: "embed_output"
+    data_type: TYPE_FP16
+    dims: [-1, 256]
+  }
+]
